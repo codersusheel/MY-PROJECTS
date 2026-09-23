@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>User Data Form</title>
+
+    <meta name="description"
+          content="User data and message generation form">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #111;
+            padding: 30px 15px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 19px;
+            margin-bottom: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+            background: #fff;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #111;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 8px;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        #submitBtn {
+            width: 100%;
+            background: #111;
+            color: #fff;
+        }
+
+        #submitBtn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .user-preview {
+            display: none;
+            background: #f7f7f7;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .user-preview.active {
+            display: block;
+        }
+
+        .user-preview strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .result {
+            display: none;
+        }
+
+        .result.active {
+            display: block;
+        }
+
+        .result-box {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 12px;
+        }
+
+        .result-box h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .copy-btn {
+            margin-top: 12px;
+            background: #e9e9e9;
+            color: #111;
+        }
+
+        .message-preview {
+            line-height: 1.6;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+
+        .status {
+            display: none;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .status.show {
+            display: block;
+        }
+
+        @media (max-width: 650px) {
+
+            body {
+                padding: 20px 10px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 17px;
+            }
+
+            .header h1 {
+                font-size: 23px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <!-- ============================= -->
+    <!-- HEADER -->
+    <!-- ============================= -->
+
+    <header class="header">
+
+        <h1>User Data Form</h1>
+
+        <p>
+            Select a user, submit the form and generate
+            complete data + user message.
+        </p>
+
+    </header>
+
+
+    <!-- ============================= -->
+    <!-- FORM -->
+    <!-- ============================= -->
+
+    <section class="card">
+
+        <h2>Submission Form</h2>
+
+        <div id="status"
+             class="status">
+        </div>
+
+
+        <!-- USER -->
+
+        <div class="form-group">
+
+            <label for="userSelect">
+                Select User *
+            </label>
+
+            <select id="userSelect">
+
+                <option value="">
+                    Loading users...
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- USER PREVIEW -->
+
+        <div id="userPreview"
+             class="user-preview">
+
+            <strong id="previewName">
+                -
+            </strong>
+
+            <span id="previewUsername">
+                -
+            </span>
+
+        </div>
+
+
+        <!-- SUBJECT -->
+
+        <div class="form-group">
+
+            <label for="subject">
+                Subject *
+            </label>
+
+            <input
+                type="text"
+                id="subject"
+                placeholder="Enter subject"
+            >
+
+        </div>
+
+
+        <!-- CATEGORY + DATE -->
+
+        <div class="grid">
+
+            <div class="form-group">
+
+                <label for="category">
+                    Category
+                </label>
+
+                <select id="category">
+
+                    <option value="General">
+                        General
+                    </option>
+
+                    <option value="Notice">
+                        Notice
+                    </option>
+
+                    <option value="Invitation">
+                        Invitation
+                    </option>
+
+                    <option value="Project">
+                        Project
+                    </option>
+
+                    <option value="Support">
+                        Support
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="date">
+                    Date
+                </label>
+
+                <input
+                    type="date"
+                    id="date"
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- REFERENCE -->
+
+        <div class="form-group">
+
+            <label for="reference">
+                Reference
+            </label>
+
+            <input
+                type="text"
+                id="reference"
+                placeholder="Example: HAP-SUB-2026-0001"
+            >
+
+        </div>
+
+
+        <!-- MESSAGE -->
+
+        <div class="form-group">
+
+            <label for="message">
+                Message *
+            </label>
+
+            <textarea
+                id="message"
+                placeholder="Write your message..."
+            ></textarea>
+
+        </div>
+
+
+        <!-- ADDITIONAL INFO -->
+
+        <div class="form-group">
+
+            <label for="additionalInfo">
+                Additional Information
+            </label>
+
+            <textarea
+                id="additionalInfo"
+                placeholder="Optional information..."
+            ></textarea>
+
+        </div>
+
+
+        <!-- SUBMIT -->
+
+        <button id="submitBtn">
+            Submit & Generate Data
+        </button>
+
+    </section>
+
+
+    <!-- ============================= -->
+    <!-- RESULT -->
+    <!-- ============================= -->
+
+    <section id="result"
+             class="card result">
+
+        <h2>Generated Result</h2>
+
+
+        <!-- ALL DATA -->
+
+        <div class="result-box">
+
+            <h3>
+                1. All Data
+            </h3>
+
+            <pre id="allData"></pre>
+
+            <button
+                class="copy-btn"
+                id="copyAllData">
+                Copy All Data
+            </button>
+
+        </div>
+
+
+        <!-- USER MESSAGE -->
+
+        <div class="result-box">
+
+            <h3>
+                2. User Message
+            </h3>
+
+            <div
+                id="userMessage"
+                class="message-preview">
+            </div>
+
+            <button
+                class="copy-btn"
+                id="copyUserMessage">
+                Copy Message
+            </button>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+    // ============================================
+    // GLOBAL DATA
+    // ============================================
+
+    let users = [];
+
+    let selectedUser = null;
+
+
+    // ============================================
+    // ELEMENTS
+    // ============================================
+
+    const userSelect =
+        document.getElementById("userSelect");
+
+    const userPreview =
+        document.getElementById("userPreview");
+
+    const previewName =
+        document.getElementById("previewName");
+
+    const previewUsername =
+        document.getElementById("previewUsername");
+
+    const submitBtn =
+        document.getElementById("submitBtn");
+
+    const result =
+        document.getElementById("result");
+
+    const allData =
+        document.getElementById("allData");
+
+    const userMessage =
+        document.getElementById("userMessage");
+
+    const status =
+        document.getElementById("status");
+
+
+    // ============================================
+    // DEFAULT DATE
+    // ============================================
+
+    document.getElementById("date").value =
+        new Date().toISOString().split("T")[0];
+
+
+    // ============================================
+    // LOAD USERS FROM JSON
+    // ============================================
+
+    async function loadUsers() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "/Assets/json/users-list.json",
+                    {
+                        cache: "no-store"
+                    }
+                );
+
+
+            if (!response.ok) {
+                throw new Error(
+                    "users-list.json not found"
+                );
+            }
+
+
+            users =
+                await response.json();
+
+
+            userSelect.innerHTML = `
+                <option value="">
+                    Select User
+                </option>
+            `;
+
+
+            users.forEach(user => {
+
+                const option =
+                    document.createElement("option");
+
+
+                option.value =
+                    user.id;
+
+
+                option.textContent =
+                    `${user.name || "Unknown"} (${user.id})`;
+
+
+                userSelect.appendChild(option);
+
+            });
+
+
+        } catch (error) {
+
+            console.error(error);
+
+
+            userSelect.innerHTML = `
+                <option value="">
+                    Unable to load users
+                </option>
+            `;
+
+            showStatus(
+                "Unable to load users-list.json.",
+                true
+            );
+
+        }
+
+    }
+
+
+    // ============================================
+    // USER SELECTION
+    // ============================================
+
+    userSelect.addEventListener(
+        "change",
+        () => {
+
+            const userId =
+                userSelect.value;
+
+
+            selectedUser =
+                users.find(
+                    user => user.id === userId
+                );
+
+
+            if (!selectedUser) {
+
+                userPreview
+                    .classList
+                    .remove("active");
+
+                return;
+            }
+
+
+            previewName.textContent =
+                selectedUser.name || "Unknown User";
+
+
+            previewUsername.textContent =
+                selectedUser.username
+                ? "@" + selectedUser.username
+                : "";
+
+
+            userPreview
+                .classList
+                .add("active");
+
+        }
+    );
+
+
+    // ============================================
+    // SUBMIT
+    // ============================================
+
+    submitBtn.addEventListener(
+        "click",
+        generateSubmission
+    );
+
+
+    function generateSubmission() {
+
+        // ----------------------------------------
+        // VALIDATION
+        // ----------------------------------------
+
+        if (!selectedUser) {
+
+            showStatus(
+                "Please select a user.",
+                true
+            );
+
+            return;
+        }
+
+
+        const subject =
+            document
+                .getElementById("subject")
+                .value
+                .trim();
+
+
+        const message =
+            document
+                .getElementById("message")
+                .value
+                .trim();
+
+
+        if (!subject) {
+
+            showStatus(
+                "Please enter a subject.",
+                true
+            );
+
+            return;
+        }
+
+
+        if (!message) {
+
+            showStatus(
+                "Please enter a message.",
+                true
+            );
+
+            return;
+        }
+
+
+        // ----------------------------------------
+        // FORM DATA
+        // ----------------------------------------
+
+        const formData = {
+
+            subject: subject,
+
+            message: message,
+
+            category:
+                document
+                    .getElementById("category")
+                    .value,
+
+            date:
+                document
+                    .getElementById("date")
+                    .value,
+
+            reference:
+                document
+                    .getElementById("reference")
+                    .value
+                    .trim(),
+
+            additionalInfo:
+                document
+                    .getElementById("additionalInfo")
+                    .value
+                    .trim()
+
+        };
+
+
+        // ----------------------------------------
+        // ALL DATA
+        // ----------------------------------------
+
+        const submissionData = {
+
+            submissionId:
+                generateReference(),
+
+            user: selectedUser,
+
+            form: formData,
+
+            createdAt:
+                new Date().toISOString(),
+
+            status: "created"
+
+        };
+
+
+        // ----------------------------------------
+        // USER MESSAGE
+        // ----------------------------------------
+
+        const generatedMessage =
+
+`Hello ${selectedUser.name || "User"},
+
+You have received a new message.
+
+Subject: ${formData.subject}
+
+${formData.message}
+
+Reference: ${formData.reference || "N/A"}
+
+Thank you.`;
+
+
+        // ----------------------------------------
+        // DISPLAY ALL DATA
+        // ----------------------------------------
+
+        allData.textContent =
+            JSON.stringify(
+                submissionData,
+                null,
+                4
+            );
+
+
+        // ----------------------------------------
+        // DISPLAY MESSAGE
+        // ----------------------------------------
+
+        userMessage.textContent =
+            generatedMessage;
+
+
+        // ----------------------------------------
+        // SHOW RESULT
+        // ----------------------------------------
+
+        result.classList.add("active");
+
+
+        showStatus(
+            "Submission generated successfully.",
+            false
+        );
+
+
+        result.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }
+
+
+    // ============================================
+    // GENERATE REFERENCE
+    // ============================================
+
+    function generateReference() {
+
+        const year =
+            new Date().getFullYear();
+
+
+        const random =
+            Math.floor(
+                1000 + Math.random() * 9000
+            );
+
+
+        return `HAP-SUB-${year}-${random}`;
+
+    }
+
+
+    // ============================================
+    // COPY ALL DATA
+    // ============================================
+
+    document
+        .getElementById("copyAllData")
+        .addEventListener(
+            "click",
+            async () => {
+
+                await navigator.clipboard.writeText(
+                    allData.textContent
+                );
+
+                showStatus(
+                    "All Data copied.",
+                    false
+                );
+
+            }
+        );
+
+
+    // ============================================
+    // COPY USER MESSAGE
+    // ============================================
+
+    document
+        .getElementById("copyUserMessage")
+        .addEventListener(
+            "click",
+            async () => {
+
+                await navigator.clipboard.writeText(
+                    userMessage.textContent
+                );
+
+                showStatus(
+                    "User Message copied.",
+                    false
+                );
+
+            }
+        );
+
+
+    // ============================================
+    // STATUS MESSAGE
+    // ============================================
+
+    function showStatus(
+        message,
+        isError
+    ) {
+
+        status.textContent =
+            message;
+
+        status.classList.add("show");
+
+        status.style.background =
+            isError
+                ? "#ffe5e5"
+                : "#e7f7ed";
+
+        status.style.color =
+            isError
+                ? "#a00000"
+                : "#176b36";
+
+
+        setTimeout(() => {
+
+            status.classList.remove("show");
+
+        }, 3500);
+
+    }
+
+
+    // ============================================
+    // INITIAL LOAD
+    // ============================================
+
+    loadUsers();
+
+</script>
+
+</body>
+
+</html>
